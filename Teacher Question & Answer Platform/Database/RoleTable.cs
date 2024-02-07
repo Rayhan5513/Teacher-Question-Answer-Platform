@@ -1,17 +1,16 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Teacher_Question___Answer_Platform.Models
+namespace Teacher_Question___Answer_Platform.Database
 {
-    public class Role
+    public class RoleTable
     {
-
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int RoleId { get; set; }
+        public int UserId { get; set; }
 
-       // [Required(ErrorMessage = "RollId is re")]
-        [EmailAddress]
+        [Required(ErrorMessage = "select option")]
         public string? RoleName { get; set; }
+
 
     }
 }
