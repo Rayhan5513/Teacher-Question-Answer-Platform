@@ -1,13 +1,12 @@
-using Microsoft.EntityFrameworkCore;
-using Teacher_Question___Answer_Platform.Data;
+using TeacherStudentQAPlatform.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(connectionString));
+
+// Add App services
+builder.Services.AddDbServices(builder);
 
 var app = builder.Build();
 
@@ -18,6 +17,8 @@ if (!app.Environment.IsDevelopment())
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
+
+app.AddMiddlewares();
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();

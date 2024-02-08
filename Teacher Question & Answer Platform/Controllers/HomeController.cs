@@ -1,21 +1,39 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
-using Teacher_Question___Answer_Platform.Models;
+using System.Security.Claims;
+using TeacherStudentQAPlatform.Models;
+using TeacherStudentQAPlatform.Services;
 
-namespace Teacher_Question___Answer_Platform.Controllers
+namespace TeacherStudentQAPlatform.Controllers
 {
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly IUserService _userService;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger,
+            IUserService userService)
         {
             _logger = logger;
+            _userService = userService;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View();
+            var userIdentity = User.Identity as ClaimsIdentity;
+
+            if (userIdentity != null && userIdentity.IsAuthenticated)
+            {
+                var emailClaim = userIdentity.FindFirst(ClaimTypes.Email);
+
+                if (emailClaim != null)
+                {
+                    string userEmail = emailClaim.Value;
+                    var questions = await _userService.GetQuestionsForUserAsync(userEmail);
+                    return View(questions);
+                }
+            }
+            return RedirectToAction("register", "user");
         }
 
         public IActionResult Privacy()

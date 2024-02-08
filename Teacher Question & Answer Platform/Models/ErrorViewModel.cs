@@ -1,4 +1,4 @@
-namespace Teacher_Question___Answer_Platform.Models
+namespace TeacherStudentQAPlatform.Models
 {
     public class ErrorViewModel
     {
