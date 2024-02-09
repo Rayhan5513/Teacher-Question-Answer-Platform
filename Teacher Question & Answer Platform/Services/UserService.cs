@@ -36,6 +36,11 @@ namespace TeacherStudentQAPlatform.Services
             return await _context.Users.FirstOrDefaultAsync(x => x.Email == email);
         }
 
+        public async Task InsertQuestionAsync(Question question)
+        {
+            await _context.Questions.AddAsync(question);
+        }
+
         public async Task InsertUserAsync(User user)
         {
             await _context.Users.AddAsync(user);

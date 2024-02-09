@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Teacher_Question___Answer_Platform.Models;
 using TeacherStudentQAPlatform.Data;
 using TeacherStudentQAPlatform.Domains;
 using TeacherStudentQAPlatform.Models;
@@ -99,6 +100,43 @@ namespace TeacherStudentQAPlatform.Controllers
                 }
             }
             return View(model);
+        }
+
+        public async Task<IActionResult> CreateQuestion()
+        {
+            return View(new QuestionModel());
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateQuestion(QuestionModel model)
+        {
+            if (!ModelState.IsValid) return View();
+            var userIdentity = User.Identity as ClaimsIdentity;
+
+            if (userIdentity != null && userIdentity.IsAuthenticated)
+            {
+                var emailClaim = userIdentity.FindFirst(ClaimTypes.Email);
+
+                if (emailClaim != null)
+                {
+                    string userEmail = emailClaim.Value;
+                    var user = await _userService.GetUserByEmailAsync(userEmail);
+                    if(user?.IsStudent??false)
+                    {
+                        var question = new Question
+                        {
+                            Title = model.Title,
+                            Description = model.Description,
+                            CreatedAt = DateTime.UtcNow,
+                            CreatorId = user.Id
+                        };
+                        await _userService.InsertQuestionAsync(question);
+                    }
+                    return View(questions);
+                }
+            }
+            return View(new QuestionModel());
         }
         private async Task SigninAsync(User model)
         {

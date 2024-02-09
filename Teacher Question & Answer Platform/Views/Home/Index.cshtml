@@ -3,20 +3,4 @@
     ViewData["Title"] = "Home Page";
     Layout = "_Layout";
 }
-<h2 class="align-content-center">
-        All questions
-</h2>
-@foreach(var question in Model)
-{
-    <div class="card">
-        <h4 class="card-title">
-            @question.Title
-        </h4>
-        <div class="card-subtitle">
-            @question.CreatedOn
-        </div>
-        <div class="card-subtitle">
-            @question.CreatedBy
-        </div>
-    </div>
-}
+

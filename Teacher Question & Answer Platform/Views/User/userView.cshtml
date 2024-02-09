@@ -1,4 +1,4 @@
-﻿@model List<AnswerOverviewModel>
+﻿@model List<QuestionOverviewModel>
 @{
     ViewData["Title"] = "Question";
     Layout = "_Layout";
@@ -6,22 +6,6 @@
 <h2 class="align-content-center">
     Answer
 </h2>
-
-@foreach (var Question in Model)
-{
-    <div class="card">
-        <h4 class="card-title">
-            @Question.Title
-        </h4>
-        <div class="card-subtitle">
-            @Question.CreatedOn
-        </div>
-        <div class="card-subtitle">
-            @Question.CreatedBy
-        </div>
-    </div>
-}
-<hr/>
 @foreach (var answer in Model)
 {
     <div class="card">
@@ -36,5 +20,3 @@
         </div>
     </div>
 }
-
-
