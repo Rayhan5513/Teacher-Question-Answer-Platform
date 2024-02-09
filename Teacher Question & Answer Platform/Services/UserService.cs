@@ -59,6 +59,7 @@ namespace TeacherStudentQAPlatform.Services
                 var user = await _context.Users.Where(x => x.Id == question.CreatorId).FirstOrDefaultAsync();
                 questionOverview.Add(new QuestionOverviewModel
                 {
+                   Id = question.Id,
                    Title = question.Title,
                    CreatedOn = question.CreatedAt,
                    CreatedBy = user?.FirstName??"" +" "+user?.LastName??"",
@@ -75,6 +76,8 @@ namespace TeacherStudentQAPlatform.Services
         public async Task InsertQuestionAsync(Question question)
         {
             await _context.Questions.AddAsync(question);
+            await _context.SaveChangesAsync();
+
         }
 
         public async Task InsertUserAsync(User user)

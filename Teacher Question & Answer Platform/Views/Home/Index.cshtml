@@ -1,6 +1,25 @@
 ﻿@model List<QuestionOverviewModel>
 @{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Home page";
     Layout = "_Layout";
+}
+<h2 class="align-content-center">
+    All questions
+</h2>
+@foreach (var question in Model)
+{
+    <a href="@Url.Action("QuestionDetails", "User", new { id = question.Id })">
+        <div class="card">
+            <h4 class="card-title">
+                @question.Title
+            </h4>
+            <h2 class="card-title">
+                @question.CreatedBy
+            </h2>
+            <div class="card-subtitle">
+                @question.CreatedOn
+            </div>
+        </div>
+    </a>
 }
 
