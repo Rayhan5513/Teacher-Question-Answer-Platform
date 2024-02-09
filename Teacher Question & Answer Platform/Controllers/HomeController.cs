@@ -33,7 +33,7 @@ namespace TeacherStudentQAPlatform.Controllers
                     return View(questions);
                 }
             }
-            return RedirectToAction("register", "user");
+            return RedirectToAction("login", "user");
         }
 
         public IActionResult Privacy()

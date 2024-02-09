@@ -39,11 +39,13 @@ namespace TeacherStudentQAPlatform.Services
         public async Task InsertUserAsync(User user)
         {
             await _context.Users.AddAsync(user);
+            await _context.SaveChangesAsync();
         }
 
         public async Task InsertUserStudentMappintAsync(UserStudentMapping mapping)
         {
             await _context.UserStudentMappings.AddAsync(mapping);
+            await _context.SaveChangesAsync();
         }
     }
 }

@@ -70,17 +70,7 @@ namespace TeacherStudentQAPlatform.Controllers
                     await _userService.InsertUserStudentMappintAsync(mapModel);
                 }
                 // now login the uesr automatically 
-                var authClaims = new List<Claim>
-                {
-                    new Claim(ClaimTypes.Email, model.Email),
-                };
-
-                var identity = new ClaimsIdentity(authClaims, CookieAuthenticationDefaults.AuthenticationScheme);
-                var principal = new ClaimsPrincipal(identity);
-                var props = new AuthenticationProperties();
-
-                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal, props);
-
+                await SigninAsync(user);
                 return RedirectToAction("Index", "Home");
             }
             return View(model);
@@ -90,16 +80,39 @@ namespace TeacherStudentQAPlatform.Controllers
         {
             return View();
         }
-
+        public async Task<IActionResult> Logout()
+        {
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            return RedirectToAction("Login");
+        }
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginModel model)
         {
             if (ModelState.IsValid)
             {
-                return RedirectToAction(nameof(Index));
+                var user = await _userService.GetUserByEmailAsync(model.Email);
+                if (user != null)
+                {
+                    await SigninAsync(user);
+                    return RedirectToAction("Index", "Home");
+                }
             }
             return View(model);
+        }
+        private async Task SigninAsync(User model)
+        {
+            var authClaims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Email, model.Email),
+                };
+
+            var identity = new ClaimsIdentity(authClaims, CookieAuthenticationDefaults.AuthenticationScheme);
+            var principal = new ClaimsPrincipal(identity);
+            var props = new AuthenticationProperties();
+
+            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal, props);
+
         }
     }
 }
