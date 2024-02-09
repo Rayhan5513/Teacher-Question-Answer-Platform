@@ -40,7 +40,7 @@ namespace TeacherStudentQAPlatform.Controllers
             if (ModelState.IsValid)
             {
                 var user = await _userService.GetUserByEmailAsync(model.Email.Trim());
-                if(user != null)
+                if (user != null)
                 {
                     ModelState.AddModelError("Email", "Email already exist, Please login");
                     return View(model);
@@ -48,14 +48,14 @@ namespace TeacherStudentQAPlatform.Controllers
 
                 user = new User
                 {
-                    FirstName = model.FirstName ,
+                    FirstName = model.FirstName,
                     LastName = model.LastName,
                     Email = model.Email,
                     CreatedAt = DateTime.Now,
                     IsStudent = model.IsStudent,
                     Password = model.Password, // need hashing TODO : task -2 
                     UpdatedAt = DateTime.Now,
-          
+
                 };
 
                 await _userService.InsertUserAsync(user);
@@ -64,8 +64,8 @@ namespace TeacherStudentQAPlatform.Controllers
                 {
                     var mapModel = new UserStudentMapping
                     {
-                        InstituteName = model.InstituteName,
-                        VersityIdCard = model.VersityIdCard,
+                        InstituteName = model?.InstituteName ?? "",
+                        VersityIdCard = model?.VersityIdCard ?? "",
                         UserId = user.Id
                     };
                     await _userService.InsertUserStudentMappintAsync(mapModel);
@@ -74,6 +74,7 @@ namespace TeacherStudentQAPlatform.Controllers
                 await SigninAsync(user);
                 return RedirectToAction("Index", "Home");
             }
+            else ModelState.AddModelError("error", "Please enter all field correctly");
             return View(model);
         }
 
@@ -99,6 +100,7 @@ namespace TeacherStudentQAPlatform.Controllers
                     return RedirectToAction("Index", "Home");
                 }
             }
+            else ModelState.AddModelError("error", "Please enter valid credential");
             return View(model);
         }
 
@@ -132,11 +134,59 @@ namespace TeacherStudentQAPlatform.Controllers
                             CreatorId = user.Id
                         };
                         await _userService.InsertQuestionAsync(question);
+                        return RedirectToAction("Index","Home");
                     }
-                    return View(questions);
                 }
             }
-            return View(new QuestionModel());
+            ModelState.AddModelError("error", "Please enter valid input filed");
+            return View(model);
+        }
+
+        public async Task<IActionResult> QuestionDetails(int id)
+        {
+            var userIdentity = User.Identity as ClaimsIdentity;
+
+            if (userIdentity != null && userIdentity.IsAuthenticated)
+            {
+                var questionDetails = await _userService.GetQuestionDetailsByIdAsync(id);
+
+                return View(questionDetails);
+            }
+            return RedirectToAction("Index", "Home");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateAns(int questionId, string answer)
+        {
+            var userIdentity = User.Identity as ClaimsIdentity;
+            var possible = false;
+            if (userIdentity != null && userIdentity.IsAuthenticated)
+            {
+                var email = userIdentity.FindFirst(ClaimTypes.Email)?.Value;
+                var user = await _userService.GetUserByEmailAsync(email);
+                var question = await _userService.GetQuestionByIdAsync(questionId);
+                if(question != null && question.CreatorId == user.Id)
+                {
+                    possible = true;
+                }
+                if (user != null && !user.IsStudent)
+                    possible = true;
+                if (possible)
+                {
+                    var ans = new Answer()
+                    {
+                        AnswererId = user?.Id??0,
+                        Comment = answer,
+                        QuestionId = questionId,
+                        CreatedAt = DateTime.UtcNow,
+                        UpdatedAt = DateTime.UtcNow,
+                    };
+                    await _userService.InsertAnswerAsync(ans);
+                    return RedirectToAction("QuestionDetails", "User", new {id = questionId});
+                }
+            }
+            ModelState.AddModelError("error", "You don't have permission to add answer for this question");
+            return RedirectToAction("QuestionDetails", "User", new { id = questionId });
         }
         private async Task SigninAsync(User model)
         {

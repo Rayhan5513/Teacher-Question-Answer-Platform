@@ -8,12 +8,17 @@
 </h2>
 @foreach (var question in Model)
 {
-    <div class="card">
-        <h4 class="card-title">
-            @question.Title
-        </h4>
-        <div class="card-subtitle">
-            @question.CreatedOn
+    <a href="@Url.Action("User", "QuestionDetails", new { id = question.Id })">
+        <div class="card">
+            <h4 class="card-title">
+                @question.Title
+            </h4>
+            <h2 class="card-title">
+                @question.CreatedBy
+            </h2>
+            <div class="card-subtitle">
+                @question.CreatedOn
+            </div>
         </div>
-    </div>
+    </a>
 }

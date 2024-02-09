@@ -1,0 +1,51 @@
+﻿@using Teacher_Question___Answer_Platform.Models
+@model QuestionDetailsModel
+
+@{
+    ViewData["Title"] = "Add Question";
+    Layout = "_Layout";
+}
+
+<div class="card">
+    <h4 class="card-title">
+        @Model.Title
+    </h4>
+    <div class="card-subtitle">
+        @Model.CreatedOn
+    </div>
+    <div class="card-subtitle">
+        @Model.CreatedBy
+    </div>
+</div>
+@foreach(var ans in Model.Answers)
+{
+    <div class="card">
+        <h3>
+            @ans.AnsweredBy
+        </h3>
+        <div>
+            <p>@ans.Answer</p>
+        </div>
+    </div>
+}
+
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="CreateAns">
+            <input type="hidden" name="questionId" value="@Model.Id" />
+            <div class="form-group">
+                <textarea name="answer" class="form-control"></textarea>
+            </div>
+            <div class="form-group">
+                <input type="submit"  class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

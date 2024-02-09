@@ -1,4 +1,5 @@
-﻿using TeacherStudentQAPlatform.Domains;
+﻿using Teacher_Question___Answer_Platform.Models;
+using TeacherStudentQAPlatform.Domains;
 using TeacherStudentQAPlatform.Models;
 
 namespace TeacherStudentQAPlatform.Services
@@ -10,5 +11,8 @@ namespace TeacherStudentQAPlatform.Services
         Task InsertQuestionAsync (Question question);
         Task InsertUserStudentMappintAsync(UserStudentMapping mapping);
         Task<List<QuestionOverviewModel>> GetQuestionsForUserAsync(string email);
+        Task<QuestionDetailsModel> GetQuestionDetailsByIdAsync(int  id);
+        Task<Question> GetQuestionByIdAsync(int id);
+        Task InsertAnswerAsync(Answer answer);
     }
 }
