@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Linq;
 using Teacher_Question___Answer_Platform.Models;
 using TeacherStudentQAPlatform.Data;
 using TeacherStudentQAPlatform.Domains;
@@ -33,7 +34,7 @@ namespace TeacherStudentQAPlatform.Services
                 return new QuestionDetailsModel();
             }
             var answers =await _context.Answers.Where(x => x.QuestionId == id)
-                .OrderBy(x=>x.CreatedAt).ToListAsync();
+                .OrderByDescending(x=>x.CreatedAt).ToListAsync();
             var model = new QuestionDetailsModel();
             model.Title =  question.Title;
             model.Description = question.Description;
@@ -52,13 +53,13 @@ namespace TeacherStudentQAPlatform.Services
 
         public async Task<List<QuestionOverviewModel>> GetQuestionsForUserAsync(string ?email = null, int? teacherId=null)
         {
-            var questions=await _context.Questions.ToListAsync();
+            var questions=await _context.Questions.OrderByDescending(x=>x.CreatedAt).ToListAsync();
             var questionOverview = new List<QuestionOverviewModel>();
             if (email != null)
             {
                 var user = await _context.Users.Where(x => x.Email == email).FirstOrDefaultAsync();
                 if(user != null)
-                    questions = questions.Where(x => x.CreatorId == user.Id).ToList();
+                    questions = questions.Where(x => x.CreatorId == user.Id).OrderByDescending(x => x.CreatedAt).ToList();
             }
             if(teacherId != null)
             {
