@@ -28,8 +28,7 @@ namespace TeacherStudentQAPlatform.Controllers
 
                 if (emailClaim != null)
                 {
-                    string userEmail = emailClaim.Value;
-                    var questions = await _userService.GetQuestionsForUserAsync(userEmail);
+                    var questions = await _userService.GetQuestionsForUserAsync();
                     return View(questions);
                 }
             }
@@ -40,7 +39,7 @@ namespace TeacherStudentQAPlatform.Controllers
         {
             return View();
         }
-
+       
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

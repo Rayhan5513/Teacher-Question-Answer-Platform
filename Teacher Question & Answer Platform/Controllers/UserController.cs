@@ -162,10 +162,10 @@ namespace TeacherStudentQAPlatform.Controllers
             var possible = false;
             if (userIdentity != null && userIdentity.IsAuthenticated)
             {
-                var email = userIdentity.FindFirst(ClaimTypes.Email)?.Value;
+                var email = userIdentity.FindFirst(ClaimTypes.Email)?.Value??"";
                 var user = await _userService.GetUserByEmailAsync(email);
                 var question = await _userService.GetQuestionByIdAsync(questionId);
-                if(question != null && question.CreatorId == user.Id)
+                if(question != null && user!=null && question.CreatorId == user.Id)
                 {
                     possible = true;
                 }
@@ -187,6 +187,58 @@ namespace TeacherStudentQAPlatform.Controllers
             }
             ModelState.AddModelError("error", "You don't have permission to add answer for this question");
             return RedirectToAction("QuestionDetails", "User", new { id = questionId });
+        }
+
+        public async Task<IActionResult> MyQuestions()
+        {
+            var userIdentity = User.Identity as ClaimsIdentity;
+
+            if (userIdentity != null && userIdentity.IsAuthenticated)
+            {
+                var email = userIdentity.FindFirst(ClaimTypes.Email)?.Value??"";
+                if(email != null)
+                {
+                    var user = await _userService.GetUserByEmailAsync(email);
+                    if (user != null)
+                    {
+                        var model = new List<QuestionOverviewModel>();
+                        ViewBag.isStudent = false;
+                        if (user.IsStudent)
+                        {
+                            model = await _userService.GetQuestionsForUserAsync(email:email);
+                            ViewBag.isStudent = true;
+                        }
+                        else
+                        {
+                            model = await _userService.GetQuestionsForUserAsync(teacherId:user.Id);
+                        }
+                        return View(model);
+                    }
+                }
+            }
+            return RedirectToAction("Index","Home");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var userIdentity = User.Identity as ClaimsIdentity;
+
+            if (userIdentity != null && userIdentity.IsAuthenticated)
+            {
+                var email = userIdentity.FindFirst(ClaimTypes.Email)?.Value ?? "";
+                if (email != null)
+                {
+                    var user = await _userService.GetUserByEmailAsync(email);
+                    var question = await _userService.GetQuestionByIdAsync(id);
+                    var answers = await _userService.GetQuestionDetailsByIdAsync(id);
+                    if(question != null && user !=null && question.CreatorId == user.Id && answers.Answers.Count==0) 
+                    {
+                        await _userService.DeleteQuestionAsync(question);
+                    }
+                }
+            }
+            return RedirectToAction("MyQuestions", "User");
         }
         private async Task SigninAsync(User model)
         {

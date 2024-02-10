@@ -50,10 +50,27 @@ namespace TeacherStudentQAPlatform.Services
             return model;
         }
 
-        public async Task<List<QuestionOverviewModel>> GetQuestionsForUserAsync(string email)
+        public async Task<List<QuestionOverviewModel>> GetQuestionsForUserAsync(string ?email = null, int? teacherId=null)
         {
             var questions=await _context.Questions.ToListAsync();
             var questionOverview = new List<QuestionOverviewModel>();
+            if (email != null)
+            {
+                var user = await _context.Users.Where(x => x.Email == email).FirstOrDefaultAsync();
+                if(user != null)
+                    questions = questions.Where(x => x.CreatorId == user.Id).ToList();
+            }
+            if(teacherId != null)
+            {
+                var tem = new List<Question>();
+                foreach(var question in questions)
+                {
+                    var replies = await HasReplaiedByAsync(question.Id,teacherId);
+                    if(replies)
+                        tem.Add(question);
+                }
+                questions = tem;
+            }
             foreach (var question in questions)
             {
                 var user = await _context.Users.Where(x => x.Id == question.CreatorId).FirstOrDefaultAsync();
@@ -66,6 +83,11 @@ namespace TeacherStudentQAPlatform.Services
                 });
             }
             return questionOverview;
+        }
+
+        public async Task<bool>HasReplaiedByAsync(int questionId,int? teacherId)
+        {
+            return await _context.Answers.Where(x => x.AnswererId == teacherId && x.QuestionId == questionId).AnyAsync();
         }
 
         public async Task<User?> GetUserByEmailAsync(string email)
@@ -94,12 +116,21 @@ namespace TeacherStudentQAPlatform.Services
 
         public async Task<Question> GetQuestionByIdAsync(int id)
         {
-           return await _context.Questions.FindAsync(id);
+           return (await _context.Questions.FindAsync(id))??new Question();
         }
 
         public async Task InsertAnswerAsync(Answer answer)
         {
             await _context.Answers.AddAsync(answer);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task DeleteQuestionAsync(Question question)
+        {
+            var id = question.Id;
+            _context.Questions.Remove(question);
+            var answers = _context.Answers.Where(x=>x.QuestionId == id);
+            _context.Answers.RemoveRange(answers);
             await _context.SaveChangesAsync();
         }
     }
