@@ -3,22 +3,61 @@
     ViewData["Title"] = "Question";
     Layout = "_Layout";
 }
-<h2 class="align-content-center">
-    All questions
-</h2>
-@foreach (var question in Model)
-{
-    <a href="@Url.Action("User", "QuestionDetails", new { id = question.Id })">
-        <div class="card">
-            <h4 class="card-title">
-                @question.Title
-            </h4>
-            <h2 class="card-title">
-                @question.CreatedBy
-            </h2>
-            <div class="card-subtitle">
-                @question.CreatedOn
+
+@* Styles specific to this page only *@
+<style>
+    /* Styles for card-like containers */
+    .card {
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        padding: 15px;
+        text-decoration: none; /* Remove default hyperlink underline */
+        color: #000; /* Set text color */
+        display: inline-block; /* Display as inline block to adjust width */
+        width: 100%; /* Ensure full width */
+        transition: box-shadow 0.3s; /* Add transition for hover effect */
+        margin-bottom: 20px; /* Add some space between cards */
+    }
+
+        .card:hover {
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.1); /* Add shadow on hover */
+        }
+
+    .card-title {
+        font-size: 1.25rem;
+        font-weight: bold;
+        margin-bottom: 5px; /* Add space below title */
+    }
+
+    .card-subtitle {
+        font-size: 0.875rem;
+        color: #6c757d;
+        margin-bottom: 10px; /* Add space below subtitle */
+    }
+
+    .container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+</style>
+
+<div class="container">
+    <h2>All questions</h2>
+    @foreach (var question in Model)
+    {
+        <a href="@Url.Action("User", "QuestionDetails", new { id = question.Id })">
+            <div class="card">
+                <h4 class="card-title">
+                    @question.Title
+                </h4>
+                <h2 class="card-title">
+                    @question.CreatedBy
+                </h2>
+                <div class="card-subtitle">
+                    @question.CreatedOn
+                </div>
             </div>
-        </div>
-    </a>
-}
+        </a>
+    }
+</div>

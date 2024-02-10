@@ -6,42 +6,74 @@
     Layout = "_Layout";
 }
 
+@* Question Section *@
+<style>
+    /* Styles for card-like containers */
+    .card {
+        border-radius: 5px;
+        margin-bottom: 15px;
+    }
+
+    .card-body {
+        padding: 15px;
+    }
+
+    .card-title {
+        font-size: 1.25rem;
+        font-weight: bold;
+    }
+
+    .card-text {
+        margin-bottom: 0; /* Remove default bottom margin for card-text */
+    }
+
+    .card-subtitle {
+        font-size: 0.875rem;
+        color: #6c757d;
+    }
+</style>
+
+<!-- Question Section -->
 <div class="card">
-    <h4 class="card-title">
-        @Model.Title
-    </h4>
-    <div class="card-subtitle">
-        @Model.CreatedOn
-    </div>
-    <div class="card-subtitle">
-        @Model.CreatedBy
+    <div class="card-body">
+        <h5 class="card-title">Title : @Model.Title</h5>
+        <p class="card-text">Description : @Model.Description</p>
+        <p class="card-text">
+            Asked by : @Model.CreatedBy
+        </p>
+            @Model.CreatedOn
     </div>
 </div>
-@foreach(var ans in Model.Answers)
+
+<!-- Answers Section -->
+@foreach (var ans in Model.Answers)
 {
-    <div class="card">
-        <h3>
-            @ans.AnsweredBy
-        </h3>
-        <div>
-            <p>@ans.Answer</p>
+    <div class="card mt-3">
+        <div class="card-body">
+            <h6 class="card-subtitle mb-2 text-muted">Answered by: @ans.AnsweredBy</h6>
+            <p class="card-text">Answer: @ans.Answer</p>
+            <p>@ans.CreatedOn</p>
         </div>
     </div>
 }
 
-<div class="row">
-    <div class="col-md-4">
+
+@* Answer Submission Form *@
+<div class="row mt-3">
+    <div class="col-md-6">
         <form asp-action="CreateAns">
             <input type="hidden" name="questionId" value="@Model.Id" />
             <div class="form-group">
-                <textarea name="answer" class="form-control"></textarea>
+                <label for="answerTextArea">Your Answer:</label>
+                <textarea id="answerTextArea" name="answer" class="form-control" rows="3"></textarea>
             </div>
             <div class="form-group">
-                <input type="submit"  class="btn btn-primary" />
+                <button type="submit" class="btn btn-primary">Submit Answer</button>
             </div>
         </form>
     </div>
 </div>
+
 
 
 @section Scripts {

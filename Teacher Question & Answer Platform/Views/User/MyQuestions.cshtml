@@ -3,6 +3,49 @@
     ViewData["Title"] = "Question";
     Layout = "_Layout";
 }
+<style>
+    /* Styles for card-like containers */
+    .card {
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        padding: 15px;
+        text-decoration: none; /* Remove default hyperlink underline */
+        color: #000; /* Set text color */
+        display: inline-block; /* Display as inline block to adjust width */
+        width: 100%; /* Ensure full width */
+        transition: box-shadow 0.3s; /* Add transition for hover effect */
+        margin-bottom: 20px; /* Add some space between cards */
+        text-align: left; /* Align card text to the left */
+    }
+
+        .card:hover {
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.1); /* Add shadow on hover */
+        }
+
+    .card-title {
+        font-size: 1.25rem;
+        font-weight: bold;
+        margin-bottom: 5px; /* Add space below title */
+    }
+
+    .card-subtitle {
+        font-size: 0.875rem;
+        color: #6c757d;
+        margin-bottom: 10px; /* Add space below subtitle */
+    }
+
+    .container {
+        text-align: center; /* Center-align text within the container */
+    }
+
+    .card-link {
+        text-decoration: none; /* Remove underline */
+        color: inherit; /* Inherit color from parent */
+    }
+    .question-header {
+        text-align: center; /* Center-align the header */
+    }
+</style>
 <h2 class="align-content-center">
     @if (ViewBag.isStudent) {
         <div>
@@ -19,22 +62,20 @@
 @foreach (var question in Model)
 {
     <div class="card">
-        <a href="@Url.Action("QuestionDetails", "User", new { id = question.Id })">
-            <div class="col-md-8">
-                <h4 class="card-title">
-                    @question.Title
-                </h4>
-                <h6 class="card-title">
-                    @question.CreatedBy
-                </h6>
-                <div class="card-subtitle">
-                    @question.CreatedOn
+        <a href="@Url.Action("QuestionDetails", "User", new { id = question.Id })" class="card-link">
+            <div class="row">
+                <div class="col-md-8">
+                        <div class="card-body">
+                            <h4 class="card-title">Question : @question.Title</h4>
+                            <div class="card-subtitle">@question.CreatedOn</div>
+                        </div>
                 </div>
             </div>
         </a>
+
         @if (ViewBag.isStudent)
         {
-            <div class="col-md-4">
+            <div class="col-md-8 px-2">
                 <form asp-action="Delete" method="post">
                     <input type="hidden" name="id" value="@question.Id" />
                     <button type="submit" class="btn-danger">Delete</button>
